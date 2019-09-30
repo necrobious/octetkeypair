@@ -34,8 +34,8 @@ pub struct Curve25519PubKey {
 #[serde(try_from = "Rfc8037Jwk")]
 #[serde(into = "Rfc8037Jwk")]
 pub struct Curve25519PrvKey{
-    public:  PublicBytes,
-    private: PrivateBytes,
+    pub public:  PublicBytes,
+    pub private: PrivateBytes,
 }
 
 impl Into<Rfc8037Jwk> for Curve25519PrvKey {
