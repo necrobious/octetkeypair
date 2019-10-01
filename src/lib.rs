@@ -12,14 +12,14 @@ struct Rfc8037Jwk {
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(transparent)]
 pub struct PublicBytes(
-    #[serde(with="b64_into_32bytes")]
+    #[serde(with="base64_key")]
     pub [u8;32]
 );
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(transparent)]
 pub struct PrivateBytes(
-    #[serde(with="b64_into_32bytes")]
+    #[serde(with="base64_key")]
     pub [u8;32]
 );
 
@@ -87,7 +87,7 @@ impl TryFrom<Rfc8037Jwk> for Curve25519PrvKey {
     }
 }
 
-mod b64_into_32bytes {
+mod base64_key {
     use serde;
     use base64;
     use std::fmt;
@@ -103,9 +103,7 @@ mod b64_into_32bytes {
         impl <'de> serde::de::Visitor<'de> for Visitor {
             type Value = [u8;32];
 
-            fn expecting(&self, formatter: &mut fmt::Formatter) ->
-                fmt::Result
-            {
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
                 formatter.write_str("a 32 byte array")
             }
 
@@ -182,18 +180,22 @@ mod tests {
     ];
 
     #[test]
-    fn rfc8037_a1_example_should_succeed () -> Result<(),serde_json::error::Error> {
-        let v: Curve25519PrvKey = serde_json::from_str(A1_PRV_KEY_EXAMPLE)?;
-        assert_eq!(v.public.0, ED25519_PUB_KEY_EXAMPLE);
-        assert_eq!(v.private.0, ED25519_PRV_KEY_EXAMPLE);
-        Ok(())
+    fn rfc8037_a1_example_should_succeed ()  {
+        let v = serde_json::from_str::<Curve25519PrvKey>(A1_PRV_KEY_EXAMPLE);
+        assert!(v.is_ok());
+
+        let val = v.unwrap();
+        assert_eq!(val.public.0, ED25519_PUB_KEY_EXAMPLE);
+        assert_eq!(val.private.0, ED25519_PRV_KEY_EXAMPLE);
     }
 
     #[test]
-    fn rfc8037_a2_example_should_succeed () -> Result<(),serde_json::error::Error> {
-        let v: Curve25519PubKey = serde_json::from_str(A2_PUB_KEY_EXAMPLE)?;
-        assert_eq!(v.public.0, ED25519_PUB_KEY_EXAMPLE);
-        Ok(())
+    fn rfc8037_a2_example_should_succeed () {
+        let v  = serde_json::from_str::<Curve25519PubKey>(A2_PUB_KEY_EXAMPLE);
+        assert!(v.is_ok());
+
+        let val = v.unwrap();
+        assert_eq!(val.public.0, ED25519_PUB_KEY_EXAMPLE);
     }
 
     #[test]
