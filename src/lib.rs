@@ -4,6 +4,7 @@ use std::convert::TryFrom;
 #[derive(Deserialize, Serialize, Debug, Clone)]
 struct Rfc8037Jwk {
     pub x: PublicBytes,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub d: Option<PrivateBytes>,
     pub kty: String,
     pub crv: String,
